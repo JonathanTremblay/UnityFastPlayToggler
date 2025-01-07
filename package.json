@@ -1,0 +1,26 @@
+{
+  "name": "ca.tim-cstj.fast-play-toggler",
+  "displayName": "Fast Play Toggler",
+  "version": "0.9.0",
+  "unity": "2022.3",
+  "description": "This tool adds a checkbox in the Unity Editor to quickly toggle Fast Play mode.",
+  "documentationUrl": "https://github.com/JonathanTremblay/UnityFastPlayToggler#readme",
+  "changelogUrl": "https://github.com/JonathanTremblay/UnityFastPlayToggler#version-history",
+  "licensesUrl": "https://github.com/JonathanTremblay/UnityFastPlayToggler/blob/main/LICENSE",
+  "type": "tool",
+  "keywords": [
+    "Fast",
+    "Play",
+    "Toggler",
+    "Editor",
+    "Tool",
+    "Mac",
+    "Windows"
+  ],
+  "author": {
+    "name": "Jonathan Tremblay",
+    "email": "jtrembla@cstj.qc.ca",
+    "url": "github.com/JonathanTremblay"
+  },
+  "unityRelease": "5f1"
+}

@@ -51,6 +51,9 @@ Project Repository: [https://github.com/JonathanTremblay/UnityFastPlayToggler](h
 
 ## Version History
 
+* 0.9.1
+    * Renamed asmdef file to correctly match namespace. 
+    * Prevent status messages from repeating.
 * 0.9.0
     * First public version.
 

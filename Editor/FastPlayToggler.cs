@@ -22,8 +22,9 @@ namespace FastPlayToggler
 	[InitializeOnLoad]
 	public class FastPlayToggler
 	{
-		const string VERSION = "Version 0.9.0 (2025-01-07)";
+		const string VERSION = "Version 0.9.1 (2025-01-12)";
 		const string PREF_NAME = "FastPlayMode";
+		const string SESSION_MESSAGE_KEY = "FastPlayTogglerMessage";
 		public enum MessageKey { FastPlay, TooltipOn, TooltipOff, MoreOptions, IsDisabled, IsFastest, IsSceneOnly, IsDomainOnly, IsSceneOnlyLabel, IsDomainOnlyLabel, About }
 		static readonly Dictionary<MessageKey, string> _messages = new()
 		{
@@ -31,10 +32,10 @@ namespace FastPlayToggler
 			{ MessageKey.TooltipOn, "Fast Play is enabled."},
 			{ MessageKey.TooltipOff, "Fast Play is disabled." },
 			{ MessageKey.MoreOptions, " <size=10>(Options: ALT+Click reloads Domain only, CTRL+Click reloads Scene only, SHIFT+Click reloads nothing.)</size>" },
-			{ MessageKey.IsDisabled, "<b>[ <color=red>Fast Play Disabled:</color> Reload Domain and Scene ]</b>" },
-			{ MessageKey.IsFastest, "<b>[ <color=#20FF00>Fast Play Enabled:</color> Do not reload Domain and Scene ]</b>" },
-			{ MessageKey.IsSceneOnly, "<b>[ <color=yellow>Fast Play Partially Enabled:</color> Reload Scene only ]</b>" },
-			{ MessageKey.IsDomainOnly, "<b>[ <color=yellow>Fast Play Partially Enabled:</color> Reload Domain only ]</b>" },
+			{ MessageKey.IsDisabled, "<b>[ <color=#BB7777>Fast Play Disabled:</color> Reload Domain and Scene ]</b>" },
+			{ MessageKey.IsFastest, "<b>[ <color=#44CC44>Fast Play Enabled:</color> Do not reload Domain and Scene ]</b>" },
+			{ MessageKey.IsSceneOnly, "<b>[ <color=#EECC22>Fast Play Partially Enabled:</color> Reload Scene only ]</b>" },
+			{ MessageKey.IsDomainOnly, "<b>[ <color=#EECC22>Fast Play Partially Enabled:</color> Reload Domain only ]</b>" },
 			{ MessageKey.IsSceneOnlyLabel, " (Reload Scene only)" },
 			{ MessageKey.IsDomainOnlyLabel, " (Reload Domain only)" },
 			{ MessageKey.About, $"\n<size=10>** Fast Play Toggler is free and open source. For updates and feedback, visit https://github.com/JonathanTremblay/UnityFastPlayToggler. {VERSION} **</size>" }
@@ -116,7 +117,15 @@ namespace FastPlayToggler
 			}
 			else _currentStateText = _messages[MessageKey.IsFastest];
 
-			Debug.Log(_currentStateText + _messages[MessageKey.MoreOptions] + _messages[MessageKey.About]);
+			string message = _currentStateText + _messages[MessageKey.MoreOptions] + _messages[MessageKey.About];
+			string previousMessage = SessionState.GetString(SESSION_MESSAGE_KEY, ""); // Get the previous message
+			// If the message is different than the previous message:
+			if (message != previousMessage) 
+			{
+				// If the previous message is not empty OR fast play mode is enabled, display the message in the console:
+				if (previousMessage != "" || _isFastPlayMode) Debug.Log(message);
+			}
+			SessionState.SetString(SESSION_MESSAGE_KEY, message); // Save the message for the next time
 		}
 
 		/// <summary>

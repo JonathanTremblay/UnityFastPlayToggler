@@ -1,7 +1,8 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Globalization;
 using FastPlayToggler.ToolbarCallback;
 
 namespace FastPlayToggler
@@ -22,11 +23,11 @@ namespace FastPlayToggler
 	[InitializeOnLoad]
 	public class FastPlayToggler
 	{
-		const string VERSION = "Version 0.9.1 (2025-01-12)";
-		const string PREF_NAME = "FastPlayMode";
-		const string SESSION_MESSAGE_KEY = "FastPlayTogglerMessage";
-		public enum MessageKey { FastPlay, TooltipOn, TooltipOff, MoreOptions, IsDisabled, IsFastest, IsSceneOnly, IsDomainOnly, IsSceneOnlyLabel, IsDomainOnlyLabel, About }
-		static readonly Dictionary<MessageKey, string> _messages = new()
+		const string _VERSION = "Version 0.9.2 (2025-01-18)";
+		const string _PREF_NAME = "FastPlayMode";
+		const string _SESSION_MESSAGE_KEY = "FastPlayTogglerMessage";
+		enum MessageKey { FastPlay, TooltipOn, TooltipOff, MoreOptions, IsDisabled, IsFastest, IsSceneOnly, IsDomainOnly, IsSceneOnlyLabel, IsDomainOnlyLabel, About }
+		static readonly Dictionary<MessageKey, string> _messagesEn = new()
 		{
 			{ MessageKey.FastPlay, "Fast Play" },
 			{ MessageKey.TooltipOn, "Fast Play is enabled."},
@@ -38,8 +39,25 @@ namespace FastPlayToggler
 			{ MessageKey.IsDomainOnly, "<b>[ <color=#EECC22>Fast Play Partially Enabled:</color> Reload Domain only ]</b>" },
 			{ MessageKey.IsSceneOnlyLabel, " (Reload Scene only)" },
 			{ MessageKey.IsDomainOnlyLabel, " (Reload Domain only)" },
-			{ MessageKey.About, $"\n<size=10>** Fast Play Toggler is free and open source. For updates and feedback, visit https://github.com/JonathanTremblay/UnityFastPlayToggler. {VERSION} **</size>" }
+			{ MessageKey.About, $"\n<size=10>** Fast Play Toggler is free and open source. For updates and feedback, visit https://github.com/JonathanTremblay/UnityFastPlayToggler. {_VERSION} **</size>" }
 		};
+		static readonly Dictionary<MessageKey, string> _messagesFr = new()
+		{
+			{ MessageKey.FastPlay, "Fast Play" },
+			{ MessageKey.TooltipOn, "Fast Play est activé."},
+			{ MessageKey.TooltipOff, "Fast Play est désactivé." },
+			{ MessageKey.MoreOptions, " <size=10>(Options: ALT+Clic recharge seulement le domaine, CTRL+Clic recharge seulement la scène, SHIFT+Clic ne recharge rien.)</size>" },
+			{ MessageKey.IsDisabled, "<b>[ <color=#BB7777>Fast Play désactivé:</color> Recharge le domaine et la scène ]</b>" },
+			{ MessageKey.IsFastest, "<b>[ <color=#44CC44>Fast Play activé:</color> Ne recharge ni le domaine ni la scène ]</b>" },
+			{ MessageKey.IsSceneOnly, "<b>[ <color=#EECC22>Fast Play partiellement activé:</color> Recharge seulement la scène ]</b>" },
+			{ MessageKey.IsDomainOnly, "<b>[ <color=#EECC22>Fast Play partiellement activé:</color> Recharge seulement le domaine ]</b>" },
+			{ MessageKey.IsSceneOnlyLabel, " (Reload Scene only)" },
+			{ MessageKey.IsDomainOnlyLabel, " (Reload Domain only)" },
+			{ MessageKey.About, $"\n<size=10>** Fast Play Toggler est gratuit et open source. Pour les mises à jour et les commentaires, visitez https://github.com/JonathanTremblay/UnityFastPlayToggler. {_VERSION} **</size>" }
+		};
+		        // The dictionary to use for messages, depending on the current language:
+        static Dictionary<MessageKey, string> _messages = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "fr" ? _messagesFr : _messagesEn;
+
 		static string _labelText = _messages[MessageKey.FastPlay];
 		static string _currentStateText = _messages[MessageKey.IsDisabled];
 		static EnterPlayModeOptions _lastPlayModeOptions;
@@ -67,7 +85,7 @@ namespace FastPlayToggler
 			ManageVerticalAlign();
 
 			bool isChecked = GUILayout.Toggle(_isFastPlayMode, new GUIContent(_labelText, _tooltipText));
-			EditorPrefs.SetBool(PREF_NAME, isChecked);
+			EditorPrefs.SetBool(_PREF_NAME, isChecked);
 
 			GUILayout.EndVertical();
 
@@ -118,14 +136,14 @@ namespace FastPlayToggler
 			else _currentStateText = _messages[MessageKey.IsFastest];
 
 			string message = _currentStateText + _messages[MessageKey.MoreOptions] + _messages[MessageKey.About];
-			string previousMessage = SessionState.GetString(SESSION_MESSAGE_KEY, ""); // Get the previous message
+			string previousMessage = SessionState.GetString(_SESSION_MESSAGE_KEY, ""); // Get the previous message
 			// If the message is different than the previous message:
 			if (message != previousMessage) 
 			{
 				// If the previous message is not empty OR fast play mode is enabled, display the message in the console:
 				if (previousMessage != "" || _isFastPlayMode) Debug.Log(message);
 			}
-			SessionState.SetString(SESSION_MESSAGE_KEY, message); // Save the message for the next time
+			SessionState.SetString(_SESSION_MESSAGE_KEY, message); // Save the message for the next time
 		}
 
 		/// <summary>

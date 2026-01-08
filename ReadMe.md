@@ -1,45 +1,73 @@
 # Unity Fast Play Toggler
 
-This tool adds a 'Fast Play' checkbox next to the play button in the Unity Editor.
-It allows to quickly toggle Fast Play mode (without having to go to Project Settings > Editor > Enter Play Mode Settings).
+![Unity Version](https://img.shields.io/badge/unity-2021.3_--_6000.2-000000.svg?style=flat-square&logo=unity)
+![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)
 
-Keep in mind that Fast Play mode will prevent the Domain and/or Scene from being reloaded when entering Play.
-This can lead to unexpected behavior, so don't forget to make frequent tests without the Fast Play mode!
+**Fast Play Toggler** adds a "Fast  ▶️" button (or a toggle checkbox) next to the play button in the Unity Editor. It allows to quickly enter **Fast Play mode** without having to manually change the Project Settings every time.
+
+It acts as a shortcut to Unity's built-in **Enter Play Mode Options**. It disables Domain and Scene reloading to drastically reduce the time it takes to enter Play Mode.
+
+> **⚠️ Warning:** Disabling Domain Reload means **static variables are not reset** between play sessions. Ensure your code handles static variable initialization correctly (see [Handling Static Variables](#handling-static-variables)).
+
 
 ## Table of Contents
 
-1. [Getting Started](#getting-started)
-2. [Compatibility](#compatibility)
-3. [Known Issues](#known-issues)
-4. [About the Project](#about-the-project)
-5. [Contact](#contact)
-6. [Version History](#version-history)
-7. [License](#license)
+1. [Features](#features)
+2. [Getting Started](#getting-started)
+3. [Compatibility](#compatibility)
+4. [Handling Static Variables](#handling-static-variables)
+5. [Known Issues](#known-issues)
+6. [Contact](#contact)
+7. [Version History](#version-history)
+8. [License](#license)
+
+## Features
+
+*   **Fast Play Button:** A dedicated "Fast ▶️" button to start a single play session with Fast Play settings (Domain/Scene reload disabled), automatically reverting to safe settings afterwards.
+*   **Toggle Checkbox (Optional):** A persistent checkbox to keep Fast Play enabled for standard Play button clicks.
 
 ## Getting Started
 
-* Import this lightweight package to your project.
-* The 'Fast Play' checkbox will appear next to the play button in the Unity Editor.
-* Click the checkbox to enable or disable Fast Play mode.
-* Advanced shortcuts:
-  - ALT+Click: Reload Domain only
-  - CTRL+Click: Reload Scene only
-  - SHIFT+Click: Reload nothing
+1.  **Install:** Import this package into your Unity project.
+2.  **Use:**
+    *   Click the **Fast ▶️** button in the toolbar to start playing immediately without reloading Domain/Scene.
+    *   *Alternatively*, use the classic toggle checkbox if configured.
 
 ## Compatibility
 
-* Tested on Windows and MacOS with Unity versions 2022.3, 2023.2 and 6.0.
+*   **Supported Unity Versions:** From 2021.3 to 6000.2.
+*   **Note for Unity 6.3+:** If you are using Unity 6000.3 or newer, it is recommended to use the newer **[Fast Play](https://github.com/JonathanTremblay/UnityFastPlay)** package instead, which uses the modern <kbd>**UnityEditor.Toolbars**</kbd> API.
 
+⠀
+## Handling Static Variables
+
+When Domain Reload is disabled (which Fast Play does), **static variables are not reset** between play sessions. This is standard Unity behavior for "Fast Play" modes.
+
+You must manually reset your static variables to ensure your game logic works correctly when restarting. The best way to do this is using the <kbd>**[RuntimeInitializeOnLoadMethod]**</kbd> attribute with <kbd>**SubsystemRegistration**</kbd>.
+
+**Example:**
+
+```csharp
+public class MyScoreManager : MonoBehaviour
+{
+    public static int Score = 0;
+
+    // This method runs before the scene loads, resetting the static variable.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        Score = 0;
+    }
+}
+```
+
+⠀
 ## Known Issues
 
-* Fast Play mode may lead to unexpected behavior due to the lack of Domain and/or Scene reloading.
-* Make sure to frequently test your project without Fast Play mode to ensure stability.
-* (Issues can be reported on GitHub: [https://github.com/JonathanTremblay/UnityFastPlayToggler/issues](https://github.com/JonathanTremblay/UnityFastPlayToggler/issues))
-
-## About the Project
-
-* This tool doesn't do any magic! It is only a shortcut to the options available in Project Settings > Editor > Enter Play Mode Settings.
-* Those settings are nice, but they may change the way the project is behaving, so Fast Play Toggler is a tool to make toggling faster! 
+*   **Static Variables:** As mentioned above, static fields persist. Ensure you reset them.
+*   **Unexpected Behavior:** Fast Play mode may lead to unexpected behavior in some third-party assets that rely on full domain reloading.
+*   **Recommendation:** Use Fast Play for rapid iteration on gameplay logic, but frequently test with the regular Play button to ensure your game works correctly with a fresh start.
+*   **Reporting:** Issues can be reported on GitHub: [https://github.com/JonathanTremblay/UnityFastPlayToggler/issues](https://github.com/JonathanTremblay/UnityFastPlayToggler/issues)
 
 ## Contact
 
@@ -51,6 +79,9 @@ Project Repository: [https://github.com/JonathanTremblay/UnityFastPlayToggler](h
 
 ## Version History
 
+* 0.9.3
+    * Added a dedicated "Fast Play" button for one-off fast sessions.
+    * Added warnings for Unity 6.3+ users recommending the new FastPlay package.
 * 0.9.2
     * Added French localization for messages.
 * 0.9.1
